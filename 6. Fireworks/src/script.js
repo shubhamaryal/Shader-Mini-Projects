@@ -76,7 +76,16 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const createFirework = (count) => {
     // Geometry 
-    const positionArray = new Float32Array(count * 3)
+    const positionsArray = new Float32Array(count * 3)
+
+    for(let i = 0; i <= count; i++) {
+        const i3 = i * 3
+
+        positionsArray[i3 + 0] = Math.random()
+        positionsArray[i3 + 1] = Math.random()
+        positionsArray[i3 + 2] = Math.random()
+    }
+    // console.log(positionsArray)
 }
 
 createFirework(100)
