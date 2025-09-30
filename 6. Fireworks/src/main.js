@@ -30,12 +30,14 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+sizes.resolution = new THREE.Vector2(sizes.width, sizes.height)
 
 window.addEventListener('resize', () =>
 {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
+    sizes.resolution.set(sizes.width, sizes.height)
 
     // Update camera
     camera.aspect = sizes.width / sizes.height
@@ -72,7 +74,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 //  * Test
 //  */
 // const test = new THREE.Mesh(
-//     new THREE.BoxGeometry(1, 1, 1),
+//     new THREE.PlaneGeometry(),
 //     new THREE.MeshBasicMaterial()
 // )
 // scene.add(test)
@@ -80,7 +82,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 /**
  * Fireworks
  */
-const createFirework = (count, position) => {
+const createFirework = (count, position, size) => {
     // Geometry 
     const positionsArray = new Float32Array(count * 3)
 
@@ -100,7 +102,13 @@ const createFirework = (count, position) => {
     // const material = new THREE.PointsMaterial()
     const material = new THREE.ShaderMaterial({
       vertexShader: fireworkVertexShader,
-      fragmentShader: fireworkFragmentShader
+      fragmentShader: fireworkFragmentShader,
+      uniforms: {
+        // uSize: new THREE.Uniform(50),
+        uSize: new THREE.Uniform(size),
+        // uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width, sizes.height)),
+        uResolution: new THREE.Uniform(sizes.resolution),
+      }
     })
 
     // Points 
@@ -109,7 +117,20 @@ const createFirework = (count, position) => {
     scene.add(fireworks)
 }
 
-createFirework(100, new THREE.Vector3())
+createFirework(
+  100,  // Count
+  new THREE.Vector3(),  // Position
+  // 50,  // Sizes
+  0.5,  // Sizes
+  
+)
+
+// // Test 
+// const test = new THREE.Mesh(
+//   new THREE.PlaneGeometry(),
+//   new THREE.MeshBasicMaterial()
+// )
+// scene.add(test)
 
 /**
  * Animate
