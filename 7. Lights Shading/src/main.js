@@ -2,8 +2,12 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+// import shadingVertexShader from './shaders/shading/vertex.glsl'
+// import shadingFragmentShader from './shaders/shading/fragment.glsl'
 import shadingVertexShader from './shaders/shading/vertex.glsl?raw'
 import shadingFragmentShader from './shaders/shading/fragment.glsl?raw'
+
+import ambientLightFunction from './shaders/includes/ambientLight.glsl?raw'
 
 /**
  * Base
@@ -77,9 +81,15 @@ renderer.setPixelRatio(sizes.pixelRatio)
 const materialParameters = {}
 materialParameters.color = '#ffffff'
 
+// Manually include the ambient light function
+const processedFragmentShader = shadingFragmentShader.replace(
+    '#include "../includes/ambientLight.glsl"',
+    ambientLightFunction
+)
+
 const material = new THREE.ShaderMaterial({
     vertexShader: shadingVertexShader,
-    fragmentShader: shadingFragmentShader,
+    fragmentShader: processedFragmentShader,
     uniforms:
     {
         uColor: new THREE.Uniform(new THREE.Color(materialParameters.color)),
@@ -127,6 +137,18 @@ gltfLoader.load(
         scene.add(suzanne)
     }
 )
+
+/**
+ * Light helpers
+ */
+const directionalLightHelper = new THREE.Mesh(
+    new THREE.PlaneGeometry(),
+    new THREE.MeshBasicMaterial()
+)
+directionalLightHelper.material.color.setRGB(0.1, 0.1, 1)
+directionalLightHelper.material.side = THREE.DoubleSide
+directionalLightHelper.position.set(0, 0, 3)
+scene.add(directionalLightHelper)
 
 /**
  * Animate
