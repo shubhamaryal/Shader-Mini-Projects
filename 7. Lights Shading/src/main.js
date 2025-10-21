@@ -7,7 +7,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import shadingVertexShader from './shaders/shading/vertex.glsl?raw'
 import shadingFragmentShader from './shaders/shading/fragment.glsl?raw'
 
-import ambientLightFunction from './shaders/includes/ambientLight.glsl?raw'
+import ambientLight from './shaders/includes/ambientLight.glsl?raw'
+import directionalLight from './shaders/includes/directionalLight.glsl?raw'
+import pointLight from './shaders/includes/pointLight.glsl?raw'
 
 /**
  * Base
@@ -82,10 +84,19 @@ const materialParameters = {}
 materialParameters.color = '#ffffff'
 
 // Manually include the ambient light function
-const processedFragmentShader = shadingFragmentShader.replace(
-    '#include "../includes/ambientLight.glsl"',
-    ambientLightFunction
-)
+const processedFragmentShader = shadingFragmentShader
+    .replace(
+        '#include "../includes/ambientLight.glsl"',
+        ambientLight
+    )
+    .replace(
+        '#include "../includes/directionalLight.glsl"',
+        directionalLight
+    )
+        .replace(
+        '#include "../includes/pointLight.glsl"',
+        pointLight
+    )
 
 const material = new THREE.ShaderMaterial({
     vertexShader: shadingVertexShader,
@@ -141,6 +152,7 @@ gltfLoader.load(
 /**
  * Light helpers
  */
+// Directional Light Helper
 const directionalLightHelper = new THREE.Mesh(
     new THREE.PlaneGeometry(),
     new THREE.MeshBasicMaterial()
@@ -149,6 +161,23 @@ directionalLightHelper.material.color.setRGB(0.1, 0.1, 1)
 directionalLightHelper.material.side = THREE.DoubleSide
 directionalLightHelper.position.set(0, 0, 3)
 scene.add(directionalLightHelper)
+
+// Point Light Helper
+const pointLightHelper = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+)
+pointLightHelper.material.color.setRGB(1, 0.1, 0.1)
+pointLightHelper.position.set(0, 2.5, 0)
+scene.add(pointLightHelper)
+
+const pointLightHelper2 = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+)
+pointLightHelper2.material.color.setRGB(0.1, 1.0, 0.5)
+pointLightHelper2.position.set(2.0, 2.0, 2.0)
+scene.add(pointLightHelper2)
 
 /**
  * Animate
